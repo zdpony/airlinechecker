@@ -507,7 +507,7 @@ public class ResultEvaluator implements Cloneable{
             while(iter.hasNext()){
                 String outFlightId = iter.next();
                 TransferLimitation transferLimitation = transferInInfoMap.get(outFlightId);
-                //记录签转旅客情况，用于后面统计
+                //记录此取消航班的中转后段航班情况，用于后面统计
                 passTransInfo.get(outFlightId).add(Triple.of(1, transferLimitation.getTransferPassNum(), 0L));
             }
         }
