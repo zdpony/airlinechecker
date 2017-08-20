@@ -502,7 +502,7 @@ public class ResultEvaluator implements Cloneable{
     private void cancelTransferFlight(ResultFlight resultFlight, Map<String, List<Triple<Integer, Integer, Long>>> passTransInfo){
         String flightId = resultFlight.getFlightId();
         if(inputData.getTransferInInfoMap().containsKey(flightId)){
-            Map<String, TransferLimitation> transferInInfoMap = inputData.getTransferInInfoMap().get(flightId);
+            Map<String, TransferLimitation> transferInInfoMap = inputData.getTransferInInfoMap().get(flightId);  
             Iterator<String> iter = transferInInfoMap.keySet().iterator();
             while(iter.hasNext()){
                 String outFlightId = iter.next();
@@ -572,7 +572,7 @@ public class ResultEvaluator implements Cloneable{
         Map<String, Integer> signChangePassInfoOfFlight = resultFlight.getSignChangePassInfo();
         int totalSignChangePassNum = 0;
         Iterator<String> iter = signChangePassInfoOfFlight.keySet().iterator();
-        while (iter.hasNext()) {
+        while (iter.hasNext()) {  //所有承接签转旅客的航班
             String signChangeFlightId = iter.next();
             ResultFlight signChangeResultFlight = resultFlightMap.get(signChangeFlightId);
             if (signChangeResultFlight.isCancel()) { //接受签转旅客的航班不能取消
@@ -580,7 +580,7 @@ public class ResultEvaluator implements Cloneable{
                 isFeasible = false;
             }
             if(signChangeResultFlight.getStartDateTime().getTime()
-                    < originFlight.getStartDateTime().getTime()){ //签转旅客只能延误
+                    < originFlight.getStartDateTime().getTime()){ //签转旅客不能早于原定起飞时间
                 constraintViolationNum += 1;
                 isFeasible = false;
             }
@@ -759,7 +759,7 @@ public class ResultEvaluator implements Cloneable{
                 else{
                     int totalPassengerNum = originFlight.getPassengerNum() + originFlight.getConnectPassengerNum();
                     int totalCancelPassenger = 0;
-                    //获得中转到当前航班的取消旅客数量
+                    //获得中转到当前航班（后段）的取消（前段取消或拉直）旅客数量
                     int transferCancelPassNum =  getPassengerNum(flightId, passTransInfo, 1);
                     totalPassengerNum -= transferCancelPassNum;
                     totalCancelPassenger += transferCancelPassNum;
@@ -771,7 +771,7 @@ public class ResultEvaluator implements Cloneable{
                     }
                     if(originFlight.isConnected()){//如果是没有拉直的联程航班
                         String nextFlightId = originFlight.getConnectedFlightId();
-                        if(resultFlightMap.get(nextFlightId).isCancel()) { //联程航班取消
+                        if(resultFlightMap.get(nextFlightId).isCancel()) { //联程航班（第二截）取消
                             totalPassengerNum -= originFlight.getConnectPassengerNum();
                             if(originFlight.isConnectedPrePart()){
                                 totalCancelPassenger += originFlight.getConnectPassengerNum();
